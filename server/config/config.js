@@ -12,6 +12,16 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 
 //==============
+//  Token expire
+//==============
+process.env.EXPIRE_TOKEN = 60 * 60 * 24 * 30;
+
+//==============
+//  Token seed
+//==============
+process.env.SEED_TOKEN = process.env.SEED_TOKEN || 'thats-the-seed-of-development';
+
+//==============
 //  Database
 //==============
 

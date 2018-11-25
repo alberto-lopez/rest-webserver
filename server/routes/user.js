@@ -1,15 +1,16 @@
 const express = require('express');
-const User = require('../models/user');
-const app = express();
-
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
-app.get('/user', function (req, res) {
+const User = require('../models/user');
+const {verifyToken, verifyAdminRole} = require('../middlewares/auth');
 
+const app = express();
+
+app.get('/user', verifyToken, (req, res) => {
     let from = req.query.from || 0;
     let limit = req.query.limit || 0;
-    let where = {'status' : true };
+    let where = {'status': true};
 
     User.find(where, 'name email role status google img')
         .skip(Number(from))
@@ -22,7 +23,7 @@ app.get('/user', function (req, res) {
                 });
             }
 
-            User.countDocuments(where, (err, count) =>{
+            User.countDocuments(where, (err, count) => {
                 res.json({
                     ok: true,
                     count,
@@ -34,9 +35,9 @@ app.get('/user', function (req, res) {
 
 });
 
-app.post('/user', function (req, res) {
-    let body = req.body;
+app.post('/user', [verifyToken, verifyAdminRole], (req, res) => {
 
+    let body = req.body;
     let user = new User({
         name: body.name,
         email: body.email,
@@ -60,7 +61,7 @@ app.post('/user', function (req, res) {
     });
 });
 
-app.put('/user/:id', function (req, res) {
+app.put('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'status']);
 
@@ -80,10 +81,9 @@ app.put('/user/:id', function (req, res) {
 });
 
 
-app.delete('/user/:id', function (req, res) {
+app.delete('/user/:id', [verifyToken, verifyAdminRole], (req, res) => {
     let id = req.params.id;
-
-    let changeStatus = {'status': false} ;
+    let changeStatus = {'status': false};
 
     User.findByIdAndUpdate(id, changeStatus, {new: true}, (err, userDB) => {
         if (err) {
@@ -99,33 +99,5 @@ app.delete('/user/:id', function (req, res) {
         })
     });
 });
-
-/*app.delete('/user/:id', function (req, res) {
-    let id = req.params.id;
-
-    User.findByIdAndRemove(id,(err, userDeleted) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            });
-        }
-
-        if ( !userDeleted ){
-            return res.status(400).json({
-                ok: false,
-                err: {
-                    message: 'User not found'
-                }
-            });
-        }
-
-        res.json({
-            ok: true,
-            user: userDeleted
-        })
-    });
-
-});*/
 
 module.exports = app;
