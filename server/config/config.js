@@ -2,7 +2,7 @@
 //  Port
 //==========
 
-process.env.PORT = process.env.PORT || 3005;
+process.env.PORT = process.env.PORT || 3000;
 
 //==============
 //  Environment
@@ -34,3 +34,9 @@ if (process.env.NODE_ENV === 'dev'){
 }
 
 process.env.URLDB = urlDataBase;
+
+//==============
+//  Google Client ID
+//==============
+
+process.env.CLIENT_ID = process.env.CLIENT_ID || "294560089108-okn021g74rmn4f3f6aqc9gu207sf1767.apps.googleusercontent.com";
