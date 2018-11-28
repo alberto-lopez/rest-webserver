@@ -24,7 +24,7 @@ app.get('/product', verifyToken, (req, res) => {
                 });
             }
 
-            Product.countDocuments(where, (err, count) => {
+            Product.countDocuments({'available': true}, (err, count) => {
                 res.json({
                     ok: true,
                     count,
