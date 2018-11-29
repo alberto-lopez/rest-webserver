@@ -21,9 +21,9 @@ let verifyToken = (req, res, next) => {
 
 let verifyAdminRole = (req, res, next) => {
     let user = req.user;
-    if(user.role === 'ROLE_ADMIN'){
+    if (user.role === 'ROLE_ADMIN') {
         next();
-    }else{
+    } else {
         return res.json({
             ok: false,
             err: {
@@ -33,7 +33,26 @@ let verifyAdminRole = (req, res, next) => {
     }
 };
 
+let verifyTokenImg = (req, res, next) => {
+    let token = req.query.token;
+
+    jwt.verify(token, process.env.SEED_TOKEN, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'Invalid token'
+                }
+            });
+        }
+
+        req.user = decoded.user;
+        next();
+    });
+};
+
 module.exports = {
     verifyToken,
-    verifyAdminRole
+    verifyAdminRole,
+    verifyTokenImg
 };
